@@ -58,15 +58,160 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 };
-// clang-format on
 
-#ifdef ENCODER_ENABLE
-bool encoder_update_user(uint8_t index, bool clockwise) {
+// taken from
+// https://www.reddit.com/r/glorious/comments/rw5767/side_leds_with_qmk_on_gmmk_pro_iso/
+// https://www.reddit.com/r/glorious/comments/rtr567/qmmk_pro_enable_encoder_wheel_to_change_the_rgb/?utm_source=amp&utm_medium=
+// https://github.com/jwhurley1/qmk_firmware/blob/master/keyboards/gmmk/pro/ansi/keymaps/jwhurley1/keymap.c
+
+uint8_t thisHue = 0;
+uint8_t thisSat = 255;
+uint8_t thisVal = 255;
+const int SIZE = 8;
+int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
+int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
+
+bool sideLEDsActive = true;
+
+#if defined(ENCODER_ENABLE) && !defined(ENCODER_DEFAULTACTIONS_ENABLE)
+
+void encoder_action_hsv_change(bool clockwise, uint8_t hueChange, uint8_t satChange, uint8_t valChange) {
     if (clockwise) {
-      tap_code(KC_VOLU);
+        thisHue += hueChange;
+        thisSat += satChange;
+        thisVal += valChange;
     } else {
-      tap_code(KC_VOLD);
+        thisHue -= hueChange;
+        thisSat -= satChange;
+        thisVal -= valChange;
+    }
+}
+
+void invert_sideLEDsActive(bool sideLEDsBoolean){
+    if(sideLEDsBoolean) {
+        sideLEDsActive = false;
+    } else {
+        sideLEDsActive = true;
+    }
+}
+
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    uint8_t mods_state = get_mods();
+
+    if (mods_state & MOD_BIT(KC_LCTL)) {
+        encoder_action_hsv_change(clockwise, 2, 0, 0); // Hue change
+    } else if (mods_state & MOD_BIT(KC_LSFT)) {
+        encoder_action_hsv_change(clockwise, 0, 2, 0); // Saturation change
+    } else if (mods_state & MOD_BIT(KC_LALT)) {
+        encoder_action_hsv_change(clockwise, 0, 0, 2); // Value/Brightness change
+    }
+    else {
+        if (clockwise) {
+            tap_code(KC_VOLU);
+        } else {
+            tap_code(KC_VOLD);
+        }
     }
     return true;
 }
-#endif // ENCODER_ENABLE
+
+#endif // endif ENCODER
+
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (IS_HOST_LED_ON(USB_LED_CAPS_LOCK)) {
+        // rgb_matrix_set_color_all(RGB_WHITE);
+
+        for (int i = 0; i < SIZE; i++) {
+            rgb_matrix_set_color(leftSideLEDs[i], RGB_WHITE);
+            rgb_matrix_set_color(rightSideLEDs[i], RGB_WHITE);
+        }
+    } else {
+        HSV hsv = {thisHue, thisSat, thisVal};
+        RGB rgb = hsv_to_rgb(hsv);
+
+        HSV currentMatrix_hsv = rgb_matrix_get_hsv();
+        RGB currentMatrix_rgb = hsv_to_rgb(currentMatrix_hsv);
+
+        if(sideLEDsActive) {
+            for (int i = 0; i < SIZE; i++) {
+                rgb_matrix_set_color(leftSideLEDs[i], rgb.r, rgb.g, rgb.b);
+                rgb_matrix_set_color(rightSideLEDs[i], rgb.r, rgb.g, rgb.b);
+            }
+        }
+
+        if (get_highest_layer(layer_state) > 0) {
+            uint8_t layer = get_highest_layer(layer_state);
+
+            for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+                for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+                    uint8_t index = g_led_config.matrix_co[row][col];
+
+
+                    if (index >= led_min && index <= led_max && index != NO_LED &&
+                    keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
+                        rgb_matrix_set_color(index, currentMatrix_rgb.r, currentMatrix_rgb.g, currentMatrix_rgb.b);
+                    }
+                }
+            }
+
+            // Set Media control colors
+            rgb_matrix_set_color(50, RGB_BLUE); // F9. "Prev Track"
+            rgb_matrix_set_color(56, RGB_BLUE); // F10 "Next track"
+            rgb_matrix_set_color(61, RGB_GREEN); //F11 "Play"
+            rgb_matrix_set_color(66, RGB_RED); // F12 "Stop"
+        }
+    }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case KC_MUTE:
+        if (record->event.pressed) {
+            if (get_mods() & MOD_MASK_CTRL){
+                invert_sideLEDsActive(sideLEDsActive);
+                return false;
+            }
+            return true;
+        }
+    default:
+      return true; // Process all other keycodes normally
+  }
+}
+
+// bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+//   return true;
+// }
+
+// // change all leds red if capslock is on
+// void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+//     if (host_keyboard_led_state().caps_lock) {
+//         for (uint8_t i = led_min; i <= led_max; i++) {
+//             if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
+//                 rgb_matrix_set_color(i, RGB_RED);
+//             }
+//         }
+//     }
+// }
+
+// // change 1 led red if capslock is on
+// void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+//     if (host_keyboard_led_state().caps_lock) {
+//         RGB_MATRIX_INDICATOR_SET_COLOR(5, 255, 255, 255); // assuming caps lock is at led #5
+//     } else {
+//         RGB_MATRIX_INDICATOR_SET_COLOR(5, 0, 0, 0);
+//     }
+// }
+
+
+// clang-format on
+
+// #ifdef ENCODER_ENABLE
+// bool encoder_update_user(uint8_t index, bool clockwise) {
+//     if (clockwise) {
+//       tap_code(KC_VOLU);
+//     } else {
+//       tap_code(KC_VOLD);
+//     }
+//     return true;
+// }
+// #endif // ENCODER_ENABLE
