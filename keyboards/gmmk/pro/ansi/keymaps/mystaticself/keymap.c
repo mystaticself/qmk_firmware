@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // https://github.com/jwhurley1/qmk_firmware/blob/master/keyboards/gmmk/pro/ansi/keymaps/jwhurley1/keymap.c
 
 uint8_t thisHue = 0;
-uint8_t thisSat = 255;
+uint8_t thisSat = 0;
 uint8_t thisVal = 255;
 const int SIZE = 8;
 int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
