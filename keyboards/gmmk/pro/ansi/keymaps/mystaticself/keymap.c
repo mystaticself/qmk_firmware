@@ -154,6 +154,15 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 }
             }
 
+            // set layer 1 led colors
+            rgb_matrix_set_color(7, RGB_CORAL); // 1
+            rgb_matrix_set_color(14, RGB_CORAL); // W
+            rgb_matrix_set_color(20, RGB_CORAL); // E
+            rgb_matrix_set_color(15, RGB_CORAL); // S
+            rgb_matrix_set_color(21, RGB_CORAL); // D
+            rgb_matrix_set_color(22, RGB_CORAL); // C
+            rgb_matrix_set_color(27, RGB_CORAL); // V
+
             // // Set Media control colors
             // rgb_matrix_set_color(50, RGB_BLUE); // F9. "Prev Track"
             // rgb_matrix_set_color(56, RGB_BLUE); // F10 "Next track"
