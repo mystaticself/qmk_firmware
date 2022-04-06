@@ -122,8 +122,8 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         // rgb_matrix_set_color_all(RGB_WHITE);
 
         for (int i = 0; i < SIZE; i++) {
-            rgb_matrix_set_color(leftSideLEDs[i], RGB_WHITE);
-            rgb_matrix_set_color(rightSideLEDs[i], RGB_WHITE);
+            rgb_matrix_set_color(leftSideLEDs[i], RGB_ORANGE);
+            rgb_matrix_set_color(rightSideLEDs[i], RGB_ORANGE);
         }
     } else {
         HSV hsv = {thisHue, thisSat, thisVal};
@@ -154,11 +154,11 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 }
             }
 
-            // Set Media control colors
-            rgb_matrix_set_color(50, RGB_BLUE); // F9. "Prev Track"
-            rgb_matrix_set_color(56, RGB_BLUE); // F10 "Next track"
-            rgb_matrix_set_color(61, RGB_GREEN); //F11 "Play"
-            rgb_matrix_set_color(66, RGB_RED); // F12 "Stop"
+            // // Set Media control colors
+            // rgb_matrix_set_color(50, RGB_BLUE); // F9. "Prev Track"
+            // rgb_matrix_set_color(56, RGB_BLUE); // F10 "Next track"
+            // rgb_matrix_set_color(61, RGB_GREEN); //F11 "Play"
+            // rgb_matrix_set_color(66, RGB_RED); // F12 "Stop"
         }
     }
 }
