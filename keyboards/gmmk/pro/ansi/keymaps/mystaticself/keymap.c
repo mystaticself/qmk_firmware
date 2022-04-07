@@ -174,7 +174,7 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
             // set layer 1 led colors when active
             for (int i = 0; i < LAYER_1_SIZE; i++) {
-                rgb_matrix_set_color(layer1LEDs[i], RGB_PINK);
+                rgb_matrix_set_color(layer1LEDs[i], RGB_WHITE);
             }
         }
     }
