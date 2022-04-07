@@ -67,9 +67,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 uint8_t thisHue = 0;
 uint8_t thisSat = 0;
 uint8_t thisVal = 255;
+
 const int SIZE = 8;
 int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
 int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
+
+// 1, W, E, S, D, C, V, F7, F8, F9, F10, F11, F12, N, \, Up, Left, Down, Right
+const int LAYER_1_SIZE = 19;
+int layer1LEDs[] = {7, 14, 20, 15, 21, 22, 27, 39, 44, 50, 56, 61, 66, 38, 93, 94, 95, 97, 79};
 
 bool sideLEDsActive = true;
 
@@ -121,9 +126,11 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     if (IS_HOST_LED_ON(USB_LED_CAPS_LOCK)) {
         // rgb_matrix_set_color_all(RGB_WHITE);
 
+        rgb_matrix_set_color(3, RGB_PINK);
+
         for (int i = 0; i < SIZE; i++) {
-            rgb_matrix_set_color(leftSideLEDs[i], RGB_ORANGE);
-            rgb_matrix_set_color(rightSideLEDs[i], RGB_ORANGE);
+            rgb_matrix_set_color(leftSideLEDs[i], RGB_PINK);
+            rgb_matrix_set_color(rightSideLEDs[i], RGB_PINK);
         }
     } else {
         HSV hsv = {thisHue, thisSat, thisVal};
@@ -154,20 +161,29 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 }
             }
 
-            // set layer 1 led colors
-            rgb_matrix_set_color(7, RGB_CORAL); // 1
-            rgb_matrix_set_color(14, RGB_CORAL); // W
-            rgb_matrix_set_color(20, RGB_CORAL); // E
-            rgb_matrix_set_color(15, RGB_CORAL); // S
-            rgb_matrix_set_color(21, RGB_CORAL); // D
-            rgb_matrix_set_color(22, RGB_CORAL); // C
-            rgb_matrix_set_color(27, RGB_CORAL); // V
-
-            // // Set Media control colors
-            // rgb_matrix_set_color(50, RGB_BLUE); // F9. "Prev Track"
-            // rgb_matrix_set_color(56, RGB_BLUE); // F10 "Next track"
-            // rgb_matrix_set_color(61, RGB_GREEN); //F11 "Play"
-            // rgb_matrix_set_color(66, RGB_RED); // F12 "Stop"
+            // set layer 1 led colors when active
+            for (int i = 0; i < LAYER_1_SIZE; i++) {
+                rgb_matrix_set_color(layer1LEDs[i], RGB_PINK);
+            }
+            // rgb_matrix_set_color(7, RGB_CORAL); // 1
+            // rgb_matrix_set_color(14, RGB_CORAL); // W
+            // rgb_matrix_set_color(20, RGB_CORAL); // E
+            // rgb_matrix_set_color(15, RGB_CORAL); // S
+            // rgb_matrix_set_color(21, RGB_CORAL); // D
+            // rgb_matrix_set_color(22, RGB_CORAL); // C
+            // rgb_matrix_set_color(27, RGB_CORAL); // V
+            // rgb_matrix_set_color(39, RGB_CORAL); // F7
+            // rgb_matrix_set_color(44, RGB_CORAL); // F8
+            // rgb_matrix_set_color(50, RGB_CORAL); // F9
+            // rgb_matrix_set_color(56, RGB_CORAL); // F10
+            // rgb_matrix_set_color(61, RGB_CORAL); // F11
+            // rgb_matrix_set_color(66, RGB_CORAL); // F12
+            // rgb_matrix_set_color(38, RGB_CORAL); // N
+            // rgb_matrix_set_color(93, RGB_CORAL); // \,
+            // rgb_matrix_set_color(94, RGB_CORAL); // Up
+            // rgb_matrix_set_color(95, RGB_CORAL); // Left
+            // rgb_matrix_set_color(97, RGB_CORAL); // Down
+            // rgb_matrix_set_color(79, RGB_CORAL); // Right
         }
     }
 }
@@ -190,37 +206,3 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 // bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //   return true;
 // }
-
-// // change all leds red if capslock is on
-// void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-//     if (host_keyboard_led_state().caps_lock) {
-//         for (uint8_t i = led_min; i <= led_max; i++) {
-//             if (g_led_config.flags[i] & LED_FLAG_KEYLIGHT) {
-//                 rgb_matrix_set_color(i, RGB_RED);
-//             }
-//         }
-//     }
-// }
-
-// // change 1 led red if capslock is on
-// void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-//     if (host_keyboard_led_state().caps_lock) {
-//         RGB_MATRIX_INDICATOR_SET_COLOR(5, 255, 255, 255); // assuming caps lock is at led #5
-//     } else {
-//         RGB_MATRIX_INDICATOR_SET_COLOR(5, 0, 0, 0);
-//     }
-// }
-
-
-// clang-format on
-
-// #ifdef ENCODER_ENABLE
-// bool encoder_update_user(uint8_t index, bool clockwise) {
-//     if (clockwise) {
-//       tap_code(KC_VOLU);
-//     } else {
-//       tap_code(KC_VOLD);
-//     }
-//     return true;
-// }
-// #endif // ENCODER_ENABLE
