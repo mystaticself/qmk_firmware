@@ -153,7 +153,6 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
                     uint8_t index = g_led_config.matrix_co[row][col];
 
-
                     if (index >= led_min && index <= led_max && index != NO_LED &&
                     keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
                         rgb_matrix_set_color(index, currentMatrix_rgb.r, currentMatrix_rgb.g, currentMatrix_rgb.b);
@@ -165,25 +164,6 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             for (int i = 0; i < LAYER_1_SIZE; i++) {
                 rgb_matrix_set_color(layer1LEDs[i], RGB_PINK);
             }
-            // rgb_matrix_set_color(7, RGB_CORAL); // 1
-            // rgb_matrix_set_color(14, RGB_CORAL); // W
-            // rgb_matrix_set_color(20, RGB_CORAL); // E
-            // rgb_matrix_set_color(15, RGB_CORAL); // S
-            // rgb_matrix_set_color(21, RGB_CORAL); // D
-            // rgb_matrix_set_color(22, RGB_CORAL); // C
-            // rgb_matrix_set_color(27, RGB_CORAL); // V
-            // rgb_matrix_set_color(39, RGB_CORAL); // F7
-            // rgb_matrix_set_color(44, RGB_CORAL); // F8
-            // rgb_matrix_set_color(50, RGB_CORAL); // F9
-            // rgb_matrix_set_color(56, RGB_CORAL); // F10
-            // rgb_matrix_set_color(61, RGB_CORAL); // F11
-            // rgb_matrix_set_color(66, RGB_CORAL); // F12
-            // rgb_matrix_set_color(38, RGB_CORAL); // N
-            // rgb_matrix_set_color(93, RGB_CORAL); // \,
-            // rgb_matrix_set_color(94, RGB_CORAL); // Up
-            // rgb_matrix_set_color(95, RGB_CORAL); // Left
-            // rgb_matrix_set_color(97, RGB_CORAL); // Down
-            // rgb_matrix_set_color(79, RGB_CORAL); // Right
         }
     }
 }
