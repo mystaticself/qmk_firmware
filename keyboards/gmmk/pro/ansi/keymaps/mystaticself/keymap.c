@@ -72,9 +72,13 @@ const int SIZE = 8;
 int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
 int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
 
+// 1, F7, F8, F9, F10, F11, F12, N
+const int LAYER_1_SIZE = 8;
+int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38};
+
 // 1, W, E, S, D, C, V, F7, F8, F9, F10, F11, F12, N, \, Up, Left, Down, Right
-const int LAYER_1_SIZE = 19;
-int layer1LEDs[] = {7, 14, 20, 15, 21, 22, 27, 39, 44, 50, 56, 61, 66, 38, 93, 94, 95, 97, 79};
+// const int LAYER_1_SIZE = 19;
+// int layer1LEDs[] = {7, 14, 20, 15, 21, 22, 27, 39, 44, 50, 56, 61, 66, 38, 93, 94, 95, 97, 79};
 
 bool sideLEDsActive = true;
 
@@ -109,8 +113,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         encoder_action_hsv_change(clockwise, 0, 2, 0); // Saturation change
     } else if (mods_state & MOD_BIT(KC_LALT)) {
         encoder_action_hsv_change(clockwise, 0, 0, 2); // Value/Brightness change
-    }
-    else {
+    } else {
         if (clockwise) {
             tap_code(KC_VOLU);
         } else {
