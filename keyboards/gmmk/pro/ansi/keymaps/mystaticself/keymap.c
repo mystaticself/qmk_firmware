@@ -20,7 +20,7 @@ enum custom_keycodes {
     MCRO_01 = SAFE_RANGE,
     MCRO_02,
     MCRO_03,
-    MCRO_04,
+    MCRO_04
 };
 
 // Tap Dance declarations
@@ -232,6 +232,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MCRO_04:
         if (record->event.pressed) {
             SEND_STRING("MY STATIC SELF Ltd.");
+            // if (get_mods() & MOD_MASK_SHIFT){
+            //     SEND_STRING("MY STATIC SELF Ltd.");
+            // }else{
+            //     SEND_STRING("MY"SS_TAP(X_SLASH)"STATIC"SS_TAP(X_SLASH)"SELF");
+            // }
         }
         return true;
 
