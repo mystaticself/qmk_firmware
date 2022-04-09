@@ -16,6 +16,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 
+enum custom_keycodes {
+    MCRO_01 = SAFE_RANGE,
+    MCRO_02,
+    MCRO_03,
+    MCRO_04,
+};
+
+// Tap Dance declarations
+enum {
+    TD_PGUP,
+    TD_PGDN,
+};
+
+// Tap Dance definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    // Tap once for Escape, twice for Caps Lock
+    [TD_PGUP] = ACTION_TAP_DANCE_DOUBLE(KC_PGUP, LGUI(KC_UP)),
+    [TD_PGDN] = ACTION_TAP_DANCE_DOUBLE(KC_PGDN, LGUI(KC_DOWN)),
+};
+
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -41,8 +61,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT(
         KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_PSCR,          KC_MPLY,
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_DEL,
-        KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_PGUP,
-        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_PGDN,
+        KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          TD(TD_PGUP),
+        KC_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           TD(TD_PGDN),
         KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, KC_UP,   KC_END,
         KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, KC_RALT, MO(1),   KC_LEFT, KC_DOWN, KC_RGHT
     ),
@@ -50,9 +70,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [1] = LAYOUT(
         _______, _______, _______, _______, _______, _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU, _______,          _______,
         _______, RGB_TOG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, NK_TOGG, _______, _______, _______, _______,          _______, _______, _______,
+        _______, _______, MCRO_02, MCRO_03, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
+        _______, _______, _______, _______, _______, _______, _______, MCRO_01, _______, _______, _______, _______,          _______,          _______,
+        _______,          _______, _______, _______, _______, _______, NK_TOGG, MCRO_04, _______, _______, _______,          _______, _______, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______, _______
     ),
 
@@ -81,9 +101,9 @@ const int SIZE = 8;
 int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
 int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
 
-// 1, F7, F8, F9, F10, F11, F12, N
-const int LAYER_1_SIZE = 8;
-int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38};
+// 1, F7, F8, F9, F10, F11, F12, N, W, E, J, M
+const int LAYER_1_SIZE = 12;
+int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38, 14, 20, 42, 43};
 
 // 1, W, E, S, D, C, V, F7, F8, F9, F10, F11, F12, N, \, Up, Left, Down, Right
 // const int LAYER_1_SIZE = 19;
@@ -190,6 +210,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         }
+
+    case MCRO_01:
+        if (record->event.pressed) {
+            SEND_STRING("John Iacoviello");
+        }
+        return true;
+
+    case MCRO_02:
+        if (record->event.pressed) {
+            SEND_STRING("https://mystaticself.com");
+        }
+        return true;
+
+    case MCRO_03:
+        if (record->event.pressed) {
+            SEND_STRING("john@mystaticself.com");
+        }
+        return true;
+
+    case MCRO_04:
+        if (record->event.pressed) {
+            SEND_STRING("MY STATIC SELF Ltd.");
+        }
+        return true;
+
     default:
       return true; // Process all other keycodes normally
   }
