@@ -16,12 +16,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 
+// adapted from
+// https://www.reddit.com/r/glorious/comments/rw5767/side_leds_with_qmk_on_gmmk_pro_iso/
+// https://www.reddit.com/r/glorious/comments/rtr567/qmmk_pro_enable_encoder_wheel_to_change_the_rgb/?utm_source=amp&utm_medium=
+// https://github.com/jwhurley1/qmk_firmware/blob/master/keyboards/gmmk/pro/ansi/keymaps/jwhurley1/keymap.c
+
+uint8_t thisHue = 0;
+uint8_t thisSat = 0;
+uint8_t thisVal = 255;
+
+const int SIZE = 8;
+int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
+int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
+
+// 1, F7, F8, F9, F10, F11, F12, N, W, E, J, M, COMMA
+const int LAYER_1_SIZE = 13;
+int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38, 14, 20, 42, 43, 48};
+
+// J, M, I
+const int LAYER_2_SIZE = 3;
+int layer2LEDs[] = {42, 43, 46};
+
+// 1, W, E, S, D, C, V, F7, F8, F9, F10, F11, F12, N, \, Up, Left, Down, Right
+// const int LAYER_1_SIZE = 19;
+// int layer1LEDs[] = {7, 14, 20, 15, 21, 22, 27, 39, 44, 50, 56, 61, 66, 38, 93, 94, 95, 97, 79};
+
+bool sideLEDsActive = true;
+
 enum custom_keycodes {
     MCRO_01 = SAFE_RANGE,
     MCRO_02,
     MCRO_03,
     MCRO_04,
     MCRO_05,
+    MCRO_06,
+    MCRO_07,
 };
 
 // Tap Dance declarations
@@ -73,7 +102,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, RGB_TOG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, MCRO_02, MCRO_03, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
         _______, _______, _______, _______, _______, _______, _______, MCRO_01, _______, _______, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, NK_TOGG, MCRO_04, MCRO_05, _______, _______,          _______, _______, _______,
+        _______,          _______, _______, _______, _______, _______, NK_TOGG, MCRO_04, _______, _______, _______,          _______, MO(2),   _______,
+        _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______, _______
+    ),
+
+    [2] = LAYOUT(
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, MCRO_07, _______, _______, _______, _______, _______,          _______,
+        _______, _______, _______, _______, _______, _______, _______, MCRO_06, _______, _______, _______, _______,          _______,          _______,
+        _______,          _______, _______, _______, _______, _______, _______, MCRO_05, _______, _______, _______,          _______, _______, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______, _______
     ),
 
@@ -88,29 +126,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 };
-
-// taken from
-// https://www.reddit.com/r/glorious/comments/rw5767/side_leds_with_qmk_on_gmmk_pro_iso/
-// https://www.reddit.com/r/glorious/comments/rtr567/qmmk_pro_enable_encoder_wheel_to_change_the_rgb/?utm_source=amp&utm_medium=
-// https://github.com/jwhurley1/qmk_firmware/blob/master/keyboards/gmmk/pro/ansi/keymaps/jwhurley1/keymap.c
-
-uint8_t thisHue = 0;
-uint8_t thisSat = 0;
-uint8_t thisVal = 255;
-
-const int SIZE = 8;
-int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
-int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
-
-// 1, F7, F8, F9, F10, F11, F12, N, W, E, J, M, COMMA
-const int LAYER_1_SIZE = 13;
-int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38, 14, 20, 42, 43, 48};
-
-// 1, W, E, S, D, C, V, F7, F8, F9, F10, F11, F12, N, \, Up, Left, Down, Right
-// const int LAYER_1_SIZE = 19;
-// int layer1LEDs[] = {7, 14, 20, 15, 21, 22, 27, 39, 44, 50, 56, 61, 66, 38, 93, 94, 95, 97, 79};
-
-bool sideLEDsActive = true;
 
 #if defined(ENCODER_ENABLE) && !defined(ENCODER_DEFAULTACTIONS_ENABLE)
 
@@ -193,9 +208,16 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                 }
             }
 
-            // set layer 1 led colors when active
-            for (int i = 0; i < LAYER_1_SIZE; i++) {
-                rgb_matrix_set_color(layer1LEDs[i], RGB_WHITE);
+            if(layer == 1){
+                // set layer 1 led colors when active
+                for (int i = 0; i < LAYER_1_SIZE; i++) {
+                    rgb_matrix_set_color(layer1LEDs[i], RGB_WHITE);
+                }
+            }else if(layer == 2){
+                // set layer 1 led colors when active
+                for (int i = 0; i < LAYER_2_SIZE; i++) {
+                    rgb_matrix_set_color(layer2LEDs[i], RGB_WHITE);
+                }
             }
         }
     }
@@ -242,11 +264,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return true;
 
+    case MCRO_06:
+        if (record->event.pressed) {
+            SEND_STRING("John");
+        }
+        return true;
+
+    case MCRO_07:
+        if (record->event.pressed) {
+            SEND_STRING("Iacoviello");
+        }
+        return true;
+
     default:
       return true; // Process all other keycodes normally
   }
 }
-
-// bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-//   return true;
-// }
