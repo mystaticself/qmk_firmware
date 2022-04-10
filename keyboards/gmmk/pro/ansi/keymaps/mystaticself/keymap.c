@@ -20,7 +20,8 @@ enum custom_keycodes {
     MCRO_01 = SAFE_RANGE,
     MCRO_02,
     MCRO_03,
-    MCRO_04
+    MCRO_04,
+    MCRO_05,
 };
 
 // Tap Dance declarations
@@ -72,7 +73,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, RGB_TOG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, MCRO_02, MCRO_03, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
         _______, _______, _______, _______, _______, _______, _______, MCRO_01, _______, _______, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, NK_TOGG, MCRO_04, _______, _______, _______,          _______, _______, _______,
+        _______,          _______, _______, _______, _______, _______, NK_TOGG, MCRO_04, MCRO_05, _______, _______,          _______, _______, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______, _______
     ),
 
@@ -101,9 +102,9 @@ const int SIZE = 8;
 int leftSideLEDs[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
 int rightSideLEDs[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
 
-// 1, F7, F8, F9, F10, F11, F12, N, W, E, J, M
-const int LAYER_1_SIZE = 12;
-int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38, 14, 20, 42, 43};
+// 1, F7, F8, F9, F10, F11, F12, N, W, E, J, M, COMMA
+const int LAYER_1_SIZE = 13;
+int layer1LEDs[] = {7, 39, 44, 50, 56, 61, 66, 38, 14, 20, 42, 43, 48};
 
 // 1, W, E, S, D, C, V, F7, F8, F9, F10, F11, F12, N, \, Up, Left, Down, Right
 // const int LAYER_1_SIZE = 19;
@@ -232,11 +233,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case MCRO_04:
         if (record->event.pressed) {
             SEND_STRING("MY STATIC SELF Ltd.");
-            // if (get_mods() & MOD_MASK_SHIFT){
-            //     SEND_STRING("MY STATIC SELF Ltd.");
-            // }else{
-            //     SEND_STRING("MY"SS_TAP(X_SLASH)"STATIC"SS_TAP(X_SLASH)"SELF");
-            // }
+        }
+        return true;
+
+    case MCRO_05:
+        if (record->event.pressed) {
+            SEND_STRING("MY/STATIC/SELF");
         }
         return true;
 
