@@ -175,11 +175,11 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     if (IS_HOST_LED_ON(USB_LED_CAPS_LOCK)) {
         // rgb_matrix_set_color_all(RGB_WHITE);
 
-        rgb_matrix_set_color(3, RGB_PINK);
+        rgb_matrix_set_color(3, RGB_YELLOW);
 
         for (int i = 0; i < SIZE; i++) {
-            rgb_matrix_set_color(leftSideLEDs[i], RGB_PINK);
-            rgb_matrix_set_color(rightSideLEDs[i], RGB_PINK);
+            rgb_matrix_set_color(leftSideLEDs[i], RGB_YELLOW);
+            rgb_matrix_set_color(rightSideLEDs[i], RGB_YELLOW);
         }
     } else {
         HSV hsv = {thisHue, thisSat, thisVal};
